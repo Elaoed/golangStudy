@@ -43,6 +43,7 @@ func main() {
 		}
 		ret := simplemath.Sqrt(v)
 		fmt.Println("Result: ", ret)
+
 	default:
 		Usage()
 	}

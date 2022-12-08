@@ -16,6 +16,7 @@ func sum(values []int, resultChan chan int) {
 		return
 	}
 	fmt.Println("finish open a file ")
+	// 类似析构函数, 有点像堆栈，多个defer按照先进后出的顺序执行, 但是会晚于returnFuncCall
 	defer f.Close()
 	time.Sleep(2 * time.Second)
 	resultChan <- sum

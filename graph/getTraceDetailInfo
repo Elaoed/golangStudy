@@ -1,0 +1,15 @@
+@startuml
+quality_trace -> ecom_product_stock_center: 通过productId和shopId获取bind信息
+quality_trace -> ecom_power_roc_base: 根据cargoIdList查询cargo详情
+note left:
+loop
+    quality_trace -> quality_trace: 获取原产地的国家/省份/城市
+    note right: 目前是临时方案，最终方案是什么
+quality_trace -> ecom_bscp_supply_qualification: 获取供应商资质和货品资质
+note right: 货品资质和供应商资质分别有哪些 有没有什么文档
+quality_trace -> quality_trace: 进行traceCargoMap的组装
+quality_trace -> quality_trace: 进行traceSupplierMap的组装
+
+
+
+@enduml

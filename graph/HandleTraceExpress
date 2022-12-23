@@ -1,0 +1,45 @@
+@startuml
+'!include https://unpkg.com/plantuml-style-c4@latest/core.puml
+mainframe 处理溯源表达
+质检溯源 -> 质检溯源: 校验入参 productId
+质检溯源 -> cmp_srv_goods: 通过productId查询product
+质检溯源 -> db: 查询所有溯源路由
+alt product.BizKind 为跨境
+    alt 非类自营商品
+        质检溯源 -> 质检溯源: 判断是预售商品: 不做处理
+    end
+else 非跨境
+end
+质检溯源 -> 质检溯源: 根据商品业务类型过滤路由
+
+alt 匹配策略
+质检溯源 -> 质检溯源: 优先级从高到低开始匹配，优先判断是否存在路由类型所有，其次根据bizCode判断具体商家或者类目id
+质检溯源 -> db: 获取对应的行业策略
+end
+
+alt 判断当前商品是否满足打标条件，决定打标或者下标
+    alt 货品溯源开关打开
+         质检溯源 -> ecom_power_roc_base: 根据productId查询货品列表
+         ecom_power_roc_base -> 质检溯源: 返回货品列表
+         质检溯源 -> 质检溯源: 判断每一个货品中都含有货品溯源打开标签, 否则就不满足打标条件
+    end
+    alt 货品资质开关打开
+        质检溯源 -> ecom_product_stock_center: 根据productId和shopId查询对应的cargoId
+        质检溯源 -> ecom_bscp_gongxiao_manage: 查询分销品的sku和spu内容
+        note left: 为什么传入cargoIdList到skuIdList上
+        质检溯源 -> 质检溯源: 判断至少存在一个spu类目列表中属性包含有原产地, 否则就不满足打标条件
+        质检溯源 -> ecom_bscp_supply_qualification: 根据productId获取对应的证书资质，供应商资质，货品资质
+        质检溯源 -> 质检溯源: 判断货品的存在资质是否包含了全部需要资质，否则就不满足打标条件
+        质检溯源 -> 质检溯源: 判断存在spu对应的商家资质不满足，则认为全部不满足
+end
+    alt 供应商资质开关打开
+        质检溯源 -> 质检溯源: 判断是否全部的供应商都有资质
+    end
+end
+
+质检溯源 -> 质检溯源: 查询strategyCode对应的tag 
+note left: strategyCode对应tag明明有多个 为什么只返回一个
+
+!include MarkOrUnMarkToProduct
+
+@enduml

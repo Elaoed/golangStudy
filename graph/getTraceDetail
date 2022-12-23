@@ -1,0 +1,10 @@
+@startuml
+quality_trace -> redis: 根据productId获取缓存
+quality_trace -> cmp_srv_goods: 根据productId获取商品详情
+note right: 听说sku和cargo是多对多的关系 为什么这里返回是单个
+quality_trace -> ecom_product_stock_center: 根据productId和shopId查询对应的skuId和cargoId
+note right: 商品作用于是一家店铺吗，为什么还能查到sku呢
+quality_trace -> ecom_supplier_shop_service: 从供销中心查询货品详情
+quality_trace -> ecom_partner_center: 通过货主小店id查询货主资质
+quality_trace -> quality_trace: 组装产品资质和工厂信息
+@enduml

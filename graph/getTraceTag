@@ -1,0 +1,18 @@
+@startuml
+quality_trace -> cmp_srv_goods: 批量获取当前订单下的商品详情
+loop 每个商品
+    alt GetProductTraceTag
+        quality_trace -> db: 根据productId选取一个优先级最高的路由
+        quality_trace -> db: 根据strategyCode获取对应的标签信息
+        note right: 为什么返回的tag是一个而不是多个呢
+    end
+    alt CargoTraceJudge
+        quality_trace -> ecom_power_roc_base: 根据skuIdList查询货品列表
+        ecom_power_roc_base -> quality_trace: 返回货品列表
+        quality_trace -> quality_trace: 判断每一个货品中都含有货品溯源打开标签, 否则就不满足打标条件
+    end
+end
+quality_trace -> db: 插入订单曝光日志
+
+
+@enduml

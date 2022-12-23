@@ -1,0 +1,12 @@
+
+@startuml
+mainframe 初始化区块链流程
+    质检溯源 -> 质检溯源: 校验入参name和accountId
+    alt accountId不存在
+        质检溯源 -> ecom_logistics_blockchain_service: 创建区块链账号
+        ecom_logistics_blockchain_service -> 质检溯源: 返回accountId
+    end
+    质检溯源 -> 质检溯源: 校验其余各种入参
+    质检溯源 -> ecom_logistics_blockchain_service: 初始化区块链业务数据
+    质检溯源 -> t_trace_registration_table: 插入溯源区块链注册表信息
+@enduml

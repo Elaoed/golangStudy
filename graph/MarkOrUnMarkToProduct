@@ -1,0 +1,26 @@
+@startuml
+'participant t_tag_product_list
+alt 打标
+    质检溯源 -> ecom_power_roc_base: 根据productId查询cargo
+    alt 查不到对应的cargo
+        质检溯源 -> ecom_product_stock_center: 根据productId和shopId查询cargoIdList
+        质检溯源 -> ecom_bscp_gongxiao_manage: 根据cargoIdList查询skuList
+        note left: 为什么这里能拿cargoId当skuId 是否分销品中心的sku就是cargo
+    end
+    质检溯源 -> 质检溯源: 把cargo和sku组装成统一对象
+    alt 如果商品上已经打过标签了
+        质检溯源 -> 质检溯源: 更新数据库标签记录, 防重复键: productId + tagCode + cargoId
+        note left: 本地库的作用是什么
+    else 没打过标签
+        质检溯源 -> 质检溯源: 更新数据库标签记录, 防重复键: productId + tagCode + cargoId
+        质检溯源 -> cmp_ecom_tag: 远程打标到商品上
+        质检溯源 -> 质检溯源: 失败补偿，更新t_tag_product_list中状态和操作人并告警
+    end
+else 下标
+    alt 如果商品无此标签
+        质检溯源 -> 质检溯源: 更新本地数据库数据为下标成功, 更新失败时告警
+    end
+    质检溯源 -> cmp_ecom_tag: 远程从商品下标
+    note left: 如果商品无此标签还需要远程下标吗
+end
+@enduml

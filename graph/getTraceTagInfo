@@ -1,0 +1,8 @@
+@startuml
+quality_trace -> db: 根据tagCode查询t_trace_strategy_tag表中的记录
+quality_trace -> ecom_product_stock_center: 获取bind信息
+quality_trace -> ecom_power_roc_base: 根据cargoIdList批量查询货品信息
+note right: 备注是//查询分销品spu信息 整理下到底哪些是查分销品 哪些是查货品的
+quality_trace -> quality_trace: 根据类目属性判断货品源头信息
+quality_trace -> quality_trace: 返回每个商品对应的货品源头信息及标签信息
+@enduml
